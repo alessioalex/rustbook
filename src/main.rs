@@ -1,3 +1,4 @@
+use std::collections::hash_map::Entry;
 use std::collections::HashMap;
 
 /*
@@ -40,13 +41,25 @@ impl Company {
             "Department name needs to have more than 1 character."
         );
 
-        let employees = self
-            .departments
-            .entry(department)
-            .or_insert(vec![employee.clone()]);
+        // let employees = self
+        //     .departments
+        //     .entry(department)
+        //     .or_insert(vec![employee.clone()]);
 
-        if employees.len() >= 1 && !employees.contains(&employee) {
-            employees.push(employee);
+        // if employees.len() >= 1 && !employees.contains(&employee) {
+        //     employees.push(employee);
+        // }
+        match self.departments.entry(department) {
+            Entry::Occupied(e) => {
+                let employees = e.into_mut();
+
+                if !employees.is_empty() && !employees.contains(&employee) {
+                    employees.push(employee);
+                }
+            }
+            Entry::Vacant(e) => {
+                e.insert(vec![employee]);
+            }
         }
     }
 
